@@ -108,7 +108,11 @@ app.get('/keep_alive/', logRequest, function (req, res) {
 });
 
 app.post('/post/', logRequest, authorizeUser, checkSingleFileUpload, checkMessagePathQueryParameter, checkTopicQueryParameter, ensureTopicSpecified, function (req, res) {
-    mqttClient.publish(req.body['topic'], req.body['message']);
+    var options = {};
+    if ('retain' in req.body) {
+        options['retain'] = req.body['retain'];
+    }
+    mqttClient.publish(req.body['topic'], req.body['message'], options);
     res.sendStatus(200);
 });
 
